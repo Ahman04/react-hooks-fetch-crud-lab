@@ -1,23 +1,35 @@
 import React from "react";
 
-function QuestionItem({ question }) {
+function QuestionItem({ question, onDeleteQuestion, onUpdateQuestion }) {
   const { id, prompt, answers, correctIndex } = question;
 
-  const options = answers.map((answer, index) => (
-    <option key={index} value={index}>
-      {answer}
-    </option>
-  ));
+  function handleDeleteClick() {
+    onDeleteQuestion(id);
+  }
+
+  function handleAnswerChange(e) {
+    const newCorrectIndex = parseInt(e.target.value) - 1; // convert 1-based -> 0-based
+    onUpdateQuestion({ ...question, correctIndex: newCorrectIndex });
+  }
 
   return (
     <li>
-      <h4>Question {id}</h4>
-      <h5>Prompt: {prompt}</h5>
+      <h4>{prompt}</h4>
       <label>
         Correct Answer:
-        <select defaultValue={correctIndex}>{options}</select>
+        <select
+          aria-label="Correct Answer"
+          value={correctIndex + 1} // show as 1-based for test
+          onChange={handleAnswerChange}
+        >
+          {answers.map((answer, index) => (
+            <option key={index} value={index + 1}>
+              {answer}
+            </option>
+          ))}
+        </select>
       </label>
-      <button>Delete Question</button>
+      <button onClick={handleDeleteClick}>Delete Question</button>
     </li>
   );
 }
